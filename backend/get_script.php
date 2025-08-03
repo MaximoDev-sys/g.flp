@@ -19,7 +19,7 @@ if (!$scriptPath || strpos($scriptPath, realpath(SCRIPT_DIR)) !== 0) {
 }
 
 // Verificar que el archivo existe y es legible
-if (!is_file($scriptPath) {
+if (!is_file($scriptPath)) {
     http_response_code(404);
     die('Script no encontrado');
 }
