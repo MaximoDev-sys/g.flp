@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guild FALOPA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7289da;
+            --secondary-color: #4e5d94;
+            --dark-color: #1e1e2d;
+            --darker-color: #12121a;
+            --light-color: #f0f0f0;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--darker-color);
+            color: var(--light-color);
+            overflow-x: hidden;
+        }
+
+        /* Página de carga */
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--darker-color);
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-content {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .loading-logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards 0.3s;
+        }
+
+        .loading-text {
+            font-size: 1.5rem;
+            margin: 0.5rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .continue-btn {
+            margin-top: 2rem;
+            padding: 0.8rem 2rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+            display: none;
+        }
+
+        .continue-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Página principal */
+        .main-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .profiles-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .profile-card {
+            background-color: rgba(30, 30, 45, 0.8);
+            border-radius: 8px;
+            padding: 1.5rem;
+            width: 300px;
+            text-align: center;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(114, 137, 218, 0.2);
+        }
+
+        .profile-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary-color);
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: -80px auto 1rem;
+        }
+
+        .avatar-frame {
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            width: 190px;
+            height: 190px;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .avatar-frame.show {
+            opacity: 1;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--dark-color);
+            position: relative;
+            z-index: 2;
+            transition: var(--transition);
+        }
+
+        .profile-name {
+            font-size: 1.3rem;
+            margin: 1rem 0 0.5rem;
+            color: var(--light-color);
+        }
+
+        .profile-description {
+            font-size: 0.9rem;
+            color: #b9bbbe;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-link {
+            color: var(--light-color);
+            font-size: 1.2rem;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .social-link:hover {
+            color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        /* Discord invite */
+        .discord-invite {
+            background-color: rgba(30, 30, 45, 0.8);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 3rem auto;
+            max-width: 500px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(114, 137, 218, 0.2);
+        }
+
+        .discord-invite:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .discord-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+
+        .discord-info {
+            text-align: left;
+        }
+
+        .discord-name {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .discord-members {
+            font-size: 0.9rem;
+            color: #b9bbbe;
+        }
+
+        .join-button {
+            margin-left: auto;
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .join-button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Partners footer */
+        .partners-footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            background-color: rgba(18, 18, 26, 0.8);
+            border-top: 1px solid rgba(114, 137, 218, 0.1);
+        }
+
+        .partners-title {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            color: var(--light-color);
+        }
+
+        .partners-logos {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .partner-logo {
+            height: 50px;
+            opacity: 0.7;
+            transition: var(--transition);
+        }
+
+        .partner-logo:hover {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        .footer-text {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: #b9bbbe;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Audio player */
+        .audio-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(30, 30, 45, 0.8);
+            padding: 0.5rem;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(114, 137, 218, 0.2);
+            z-index: 100;
+        }
+
+        .audio-control {
+            background: none;
+            border: none;
+            color: var(--light-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .audio-control:hover {
+            background-color: rgba(114, 137, 218, 0.2);
+        }
+
+        .volume-control {
+            width: 100px;
+            opacity: 0;
+            transition: var(--transition);
+            margin-right: 0.5rem;
+        }
+
+        .audio-player:hover .volume-control {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profiles-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .discord-invite {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .join-button {
+                margin: 1rem auto 0;
+            }
+
+            .volume-control {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Página de carga -->
+    <div class="loading-container" id="loadingContainer">
+        <div class="loading-content">
+            <img src="https://cdn.discordapp.com/attachments/1073719085499420742/1215023505407549540/logo.png?ex=65fb3b2e&is=65e8c62e&hm=4f7c9a0c4a5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b&" alt="Logo" class="loading-logo">
+            <div class="loading-text" id="text1">1</div>
+            <div class="loading-text" id="text2">2</div>
+            <div class="loading-text" id="text3">3</div>
+            <div class="loading-text" id="text4">4</div>
+            <div class="loading-text" id="text5">5</div>
+            <div class="loading-text" id="text6">6</div>
+            <button class="continue-btn" id="continueBtn">Continuar</button>
+        </div>
+    </div>
+
+    <!-- Página principal -->
+    <div class="main-content" id="mainContent">
+        <!-- Video de fondo -->
+        <video autoplay muted loop class="video-background">
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-galaxy-background-1610-large.mp4" type="video/mp4">
+        </video>
+
+        <!-- Particles.js -->
+        <div id="particles-js"></div>
+
+        <!-- Contenido principal -->
+        <div class="container">
+            <div class="profiles-container">
+                <!-- Perfil 1 -->
+                <div class="profile-card">
+                    <div class="avatar-container">
+                        <img src="" alt="Avatar Frame" class="avatar-frame" id="deco_us1">
+                        <img src="" alt="Profile Avatar" class="profile-avatar" id="img1">
+                    </div>
+                    <h3 class="profile-name" id="username1">Cargando...</h3>
+                    <p class="profile-description">Descripción del miembro del guild. Aquí puedes escribir algo interesante sobre esta persona.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Perfil 2 -->
+                <div class="profile-card">
+                    <div class="avatar-container">
+                        <img src="" alt="Avatar Frame" class="avatar-frame" id="deco_us2">
+                        <img src="" alt="Profile Avatar" class="profile-avatar" id="img2">
+                    </div>
+                    <h3 class="profile-name" id="username2">Cargando...</h3>
+                    <p class="profile-description">Descripción del miembro del guild. Aquí puedes escribir algo interesante sobre esta persona.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Perfil 3 -->
+                <div class="profile-card">
+                    <div class="avatar-container">
+                        <img src="" alt="Avatar Frame" class="avatar-frame" id="deco_us3">
+                        <img src="" alt="Profile Avatar" class="profile-avatar" id="img3">
+                    </div>
+                    <h3 class="profile-name" id="username3">Cargando...</h3>
+                    <p class="profile-description">Descripción del miembro del guild. Aquí puedes escribir algo interesante sobre esta persona.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invitación a Discord -->
+            <div class="discord-invite">
+                <img src="https://cdn.discordapp.com/icons/1073719085499420742/a_6c1c3f2e5a8b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b.webp?size=128" alt="Discord Server" class="discord-logo">
+                <div class="discord-info">
+                    <div class="discord-name">Guild FALOPA</div>
+                    <div class="discord-members">123 miembros en línea</div>
+                </div>
+                <button class="join-button">Unirse</button>
+            </div>
+        </div>
+
+        <!-- Footer con partners -->
+        <div class="partners-footer">
+            <h3 class="partners-title">NUESTROS PARTNERS</h3>
+            <div class="partners-logos">
+                <img src="https://via.placeholder.com/100x50?text=Partner+1" alt="Partner 1" class="partner-logo">
+                <img src="https://via.placeholder.com/100x50?text=Partner+2" alt="Partner 2" class="partner-logo">
+                <img src="https://via.placeholder.com/100x50?text=Partner+3" alt="Partner 3" class="partner-logo">
+                <img src="https://via.placeholder.com/100x50?text=Partner+4" alt="Partner 4" class="partner-logo">
+            </div>
+            <p class="footer-text">© 2023 Guild FALOPA. Todos los derechos reservados.</p>
+        </div>
+
+        <!-- Reproductor de audio -->
+        <div class="audio-player">
+            <audio id="backgroundMusic" loop>
+                <source src="music.mp3" type="audio/mp3">
+            </audio>
+            <button class="audio-control" id="playPauseBtn"><i class="fas fa-play"></i></button>
+            <input type="range" min="0" max="1" step="0.01" value="0.5" class="volume-control" id="volumeControl">
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+    async function cargarScriptProtegido(nombreScript) {
+        try {
+            const response = await fetch(`/backend/get_script.php?script=${nombreScript}`, {
+                headers: {
+                    'X-API-Key': 'tu_clave_secreta_123',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error('Error al cargar el script');
+            }
+            
+            const scriptCode = await response.text();
+            const script = document.createElement('script');
+            script.text = scriptCode;
+            document.body.appendChild(script);
+            
+        } catch (error) {
+            console.error('Error:', error);
+            // Manejo de errores
+        }
+    }
+    
+    // Ejemplo de uso
+    document.addEventListener('DOMContentLoaded', () => {
+        cargarScriptProtegido('scripts.js');
+    });
+    </script>
+</body>
+</html>
